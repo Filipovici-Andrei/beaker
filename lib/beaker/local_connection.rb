@@ -37,10 +37,15 @@ module Beaker
         end
       end
 
-      std_out, std_err, status = Open3.capture3(envs, command)
-      result.stdout << std_out
-      result.stderr << std_err
-      result.exit_code = status.exitstatus
+      begin
+        std_out, std_err, status = Open3.capture3(envs, command)
+        result.stdout << std_out
+        result.stderr << std_err
+        result.exit_code = status.exitstatus
+      rescue => e
+        result.stderr << e.inspect
+        result.exit_code = 1
+      end
 
       result.finalize!
       @logger.last_result = result
