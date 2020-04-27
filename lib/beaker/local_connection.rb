@@ -27,6 +27,14 @@ module Beaker
       @logger.debug "Local connection, no connection to close"
     end
 
+    def with_env(env)
+      backup = ENV.to_hash
+      ENV.replace(env)
+      yield
+    ensure
+      ENV.replace(backup)
+    end
+
     def execute command, options = {}, stdout_callback = nil, stderr_callback = stdout_callback
       result = Result.new(@hostname, command)
       envs = {}
@@ -38,6 +46,10 @@ module Beaker
       end
 
       begin
+        clean_env = ENV.reject{ |k| k =~ /^BUNDLE|^RUBY|^GEM/ }
+
+        with_env(clean_env) do
+
         std_out, std_err, status = Open3.capture3(envs, command)
         puts '#'*60
         puts std_out.inspect
@@ -49,6 +61,7 @@ module Beaker
         result.stdout << std_out
         result.stderr << std_err
         result.exit_code = status.exitstatus
+        end
       rescue => e
         result.stderr << e.inspect
         result.exit_code = 1
