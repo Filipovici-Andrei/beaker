@@ -237,10 +237,15 @@ module PSWindows::Exec
     end
   end
 
-  #Delete the environment variable from the current ssh environment
-  #@param [String] key The key to delete
+  #First path it finds of command executable
+  #@param [String] command The command executable to search for
+  #@param [String] additional_paths The additional paths in which to search for the command,
+  # before searching in the paths found in PATH
+  #
+  # @return [String] Path to the searched executable or empty string if not found
+  #
   #@example
-  #  host.clear_env_var('PATH')
+  #  host.which('ruby', host['privatebindir'])
   def which(command, additional_paths='')
     normalized_paths = additional_paths.gsub("\"", '')
     where_command = "cmd /V /C \"set PATH=#{normalized_paths};!PATH! && where #{command}\""
