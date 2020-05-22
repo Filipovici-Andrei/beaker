@@ -237,19 +237,14 @@ module PSWindows::Exec
     end
   end
 
-  #First path it finds of command executable
+  #First path it finds for the command executable
   #@param [String] command The command executable to search for
-  #@param [String] additional_paths The additional paths in which to search for the command,
-  # before searching in the paths found in PATH
-  #
-  # @return [String] Path to the searched executable or empty string if not found
+  #@return [String] Path to the searched executable or empty string if not found
   #
   #@example
-  #  host.which('ruby', host['privatebindir'])
-  def which(command, additional_paths='')
-    where_command = "cmd /C where #{command}\""
-
-    result = exec(Beaker::Command.new(where_command), :accept_all_exit_codes => true).stdout.chomp
+  #  host.which('ruby')
+  def which(command)
+    result = exec(Beaker::Command.new("cmd /C where #{command}"), :accept_all_exit_codes => true).stdout.chomp
     return '' if result.empty?
 
     result.split("\n").first
