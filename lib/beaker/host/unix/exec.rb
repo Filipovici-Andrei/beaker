@@ -435,19 +435,19 @@ module Unix::Exec
     true
   end
 
-  #First path it finds of command executable
+  #First path it finds for the command executable
   #@param [String] command The command executable to search for
   #@param [String] additional_paths The additional paths in which to search for the command,
-  # before searching in the paths found in PATH
+  # before searching in the paths found in the environment variable PATH
   #
   # @return [String] Path to the searched executable or empty string if not found
   #
   #@example
   #  host.which('ruby', host['privatebindir'])
   def which(command, additional_paths='')
-    which_command = "which #{command}"
+    which_command = "env PATH=\"#{additional_paths}:$PATH\" which #{command}"
 
-    result = exec(Beaker::Command.new(which_command), :accept_all_exit_codes => true).stdout.chomp
+    result = execute(which_command, :accept_all_exit_codes => true).chomp
     return '' if result.empty?
 
     result
