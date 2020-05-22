@@ -111,12 +111,12 @@ module Beaker
                                .with(beaker_command, :accept_all_exit_codes => true).and_return(beaker_result)
       end
 
-      context 'when only the environment variable PATH is used' do
-        let(:where_command) { "cmd /V /C \"set PATH=;!PATH! && where ruby\"" }
+      context 'when command is found' do
+        let(:where_command) { "cmd /C where ruby" }
         let(:result) { "C:\\Ruby26-x64\\bin\\ruby.exe" }
 
 
-        it 'calls Beaker::Command with no additional paths' do
+        it 'calls Beaker::Command' do
           instance.which('ruby')
 
           expect(Beaker::Command).to have_received(:new).with(where_command)
@@ -129,30 +129,11 @@ module Beaker
         end
       end
 
-      context 'when the search is performed in additional paths' do
-        let(:privatebindir) { "\"C:\\Program Files\\Puppet Labs\\Puppet\\puppet\\bin\";" +
-            "\"C:\\Program Files\\Puppet Labs\\Puppet\\bin\"" }
-        let(:where_command) { "cmd /V /C \"set PATH=#{privatebindir.gsub('"', '')};!PATH! && where ruby\"" }
-        let(:result) { "C:\\Program Files\\Puppet Labs\\Puppet\\puppet\\bin\\ruby.exe\nC:\\Ruby26-x64\\bin\\ruby.exe" }
-
-        it 'calls Beaker::Command with additional paths' do
-          instance.which('ruby', privatebindir)
-
-          expect(Beaker::Command).to have_received(:new).with(where_command)
-        end
-
-        it 'returns the correct path' do
-          result = instance.which('ruby', privatebindir)
-
-          expect(result).to eq("C:\\Program Files\\Puppet Labs\\Puppet\\puppet\\bin\\ruby.exe")
-        end
-      end
-
       context 'when command is not found' do
-        let(:where_command) { "cmd /V /C \"set PATH=;!PATH! && where unknown\"" }
+        let(:where_command) { "cmd /C where unknown" }
         let(:result) { '' }
 
-        it 'return empty string if command is not found' do
+        it 'return empty string' do
           response = instance.which('unknown')
 
           expect(response).to eq(result)
