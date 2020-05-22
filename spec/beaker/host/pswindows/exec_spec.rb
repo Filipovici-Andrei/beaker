@@ -102,25 +102,16 @@ module Beaker
 
     describe '#which' do
       let(:beaker_result) { instance_spy(Beaker::Result) }
-      let(:beaker_command) { instance_spy(Beaker::Command) }
 
       before do
-        allow(Beaker::Command).to receive(:new).with(where_command).and_return(beaker_command)
         allow(beaker_result).to receive(:stdout).and_return(result)
-        allow(instance).to receive(:exec)
-                               .with(beaker_command, :accept_all_exit_codes => true).and_return(beaker_result)
+        allow(instance).to receive(:execute)
+                               .with(where_command, :accept_all_exit_codes => true).and_return(beaker_result)
       end
 
       context 'when only the environment variable PATH is used' do
         let(:where_command) { "cmd /V /C \"set PATH=;!PATH! && where ruby\"" }
         let(:result) { "C:\\Ruby26-x64\\bin\\ruby.exe" }
-
-
-        it 'calls Beaker::Command with no additional paths' do
-          instance.which('ruby')
-
-          expect(Beaker::Command).to have_received(:new).with(where_command)
-        end
 
         it 'returns the correct path' do
           response = instance.which('ruby')
@@ -134,12 +125,6 @@ module Beaker
             "\"C:\\Program Files\\Puppet Labs\\Puppet\\bin\"" }
         let(:where_command) { "cmd /V /C \"set PATH=#{privatebindir.gsub('"', '')};!PATH! && where ruby\"" }
         let(:result) { "C:\\Program Files\\Puppet Labs\\Puppet\\puppet\\bin\\ruby.exe\nC:\\Ruby26-x64\\bin\\ruby.exe" }
-
-        it 'calls Beaker::Command with additional paths' do
-          instance.which('ruby', privatebindir)
-
-          expect(Beaker::Command).to have_received(:new).with(where_command)
-        end
 
         it 'returns the correct path' do
           result = instance.which('ruby', privatebindir)
