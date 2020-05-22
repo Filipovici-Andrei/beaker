@@ -247,8 +247,7 @@ module PSWindows::Exec
   #@example
   #  host.which('ruby', host['privatebindir'])
   def which(command, additional_paths='')
-    normalized_paths = additional_paths.gsub("\"", '')
-    where_command = "cmd /V /C \"set PATH=#{normalized_paths};!PATH! && where #{command}\""
+    where_command = "cmd /C where #{command}\""
 
     result = exec(Beaker::Command.new(where_command), :accept_all_exit_codes => true).stdout.chomp
     return '' if result.empty?

@@ -445,7 +445,7 @@ module Unix::Exec
   #@example
   #  host.which('ruby', host['privatebindir'])
   def which(command, additional_paths='')
-    which_command = "env PATH=\"#{additional_paths}:$PATH\" which #{command}"
+    which_command = "which #{command}"
 
     result = exec(Beaker::Command.new(which_command), :accept_all_exit_codes => true).stdout.chomp
     return '' if result.empty?
