@@ -101,12 +101,9 @@ module Beaker
     end
 
     describe '#which' do
-      let(:beaker_result) { instance_spy(Beaker::Result) }
-
       before do
-        allow(beaker_result).to receive(:stdout).and_return(result)
         allow(instance).to receive(:execute)
-                               .with(where_command, :accept_all_exit_codes => true).and_return(beaker_result)
+                               .with(where_command, :accept_all_exit_codes => true).and_return(result)
       end
 
       context 'when only the environment variable PATH is used' do

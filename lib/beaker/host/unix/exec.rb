@@ -447,7 +447,7 @@ module Unix::Exec
   def which(command, additional_paths='')
     which_command = "env PATH=\"#{additional_paths}:$PATH\" which #{command}"
 
-    result = execute(which_command, :accept_all_exit_codes => true).stdout.chomp
+    result = execute(which_command, :accept_all_exit_codes => true).chomp
     return '' if result.empty?
 
     result

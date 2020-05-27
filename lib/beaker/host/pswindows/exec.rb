@@ -250,7 +250,7 @@ module PSWindows::Exec
     normalized_paths = additional_paths.gsub("\"", '')
     where_command = "cmd /V /C \"set PATH=#{normalized_paths};!PATH! && where #{command}\""
 
-    result = execute(where_command, :accept_all_exit_codes => true).stdout.chomp
+    result = execute(where_command, :accept_all_exit_codes => true).chomp
     return '' if result.empty?
 
     result.split("\n").first
