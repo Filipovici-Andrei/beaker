@@ -21,7 +21,7 @@ module PSWindows::File
   end
 
   def cat(path)
-    exec(powershell("type #{path}"))
+    exec(powershell("type #{path}")).stdout
   end
 
   def file_exist?(path)
