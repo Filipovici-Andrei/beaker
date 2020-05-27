@@ -357,7 +357,7 @@ module Beaker
       end
 
       context 'when only the environment variable PATH is used' do
-        let(:where_command) { "env PATH=\":$PATH\" which ruby" }
+        let(:where_command) { "which ruby" }
         let(:result) { "/usr/bin/ruby.exe" }
 
         it 'returns the correct path' do
@@ -367,20 +367,8 @@ module Beaker
         end
       end
 
-      context 'when the search is performed in additional paths' do
-        let(:privatebindir) { "/opt/puppetlabs/bin:/opt/puppetlabs/puppet/bin" }
-        let(:where_command) { "env PATH=\"#{privatebindir}:$PATH\" which ruby" }
-        let(:result) { "/opt/puppetlabs/bin/ruby.exe" }
-
-        it 'returns the correct path' do
-          result = instance.which('ruby', privatebindir)
-
-          expect(result).to eq(result)
-        end
-      end
-
       context 'when command is not found' do
-        let(:where_command) { "env PATH=\":$PATH\" which unknown" }
+        let(:where_command) { "which unknown" }
         let(:result) { '' }
 
         it 'return empty string if command is not found' do
