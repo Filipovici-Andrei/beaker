@@ -352,25 +352,16 @@ module Beaker
 
     describe '#which' do
       let(:beaker_result) { instance_spy(Beaker::Result) }
-      let(:beaker_command) { instance_spy(Beaker::Command) }
 
       before do
-        allow(Beaker::Command).to receive(:new).with(where_command).and_return(beaker_command)
         allow(beaker_result).to receive(:stdout).and_return(result)
-        allow(instance).to receive(:exec)
-                               .with(beaker_command, :accept_all_exit_codes => true).and_return(beaker_result)
+        allow(instance).to receive(:execute)
+                               .with(where_command, :accept_all_exit_codes => true).and_return(beaker_result)
       end
 
-      context 'when command is found' do
-        let(:where_command) { "which ruby" }
+      context 'when only the environment variable PATH is used' do
+        let(:where_command) { "env PATH=\":$PATH\" which ruby" }
         let(:result) { "/usr/bin/ruby.exe" }
-
-
-        it 'calls Beaker::Command' do
-          instance.which('ruby')
-
-          expect(Beaker::Command).to have_received(:new).with(where_command)
-        end
 
         it 'returns the correct path' do
           response = instance.which('ruby')
@@ -379,11 +370,23 @@ module Beaker
         end
       end
 
+      context 'when the search is performed in additional paths' do
+        let(:privatebindir) { "/opt/puppetlabs/bin:/opt/puppetlabs/puppet/bin" }
+        let(:where_command) { "env PATH=\"#{privatebindir}:$PATH\" which ruby" }
+        let(:result) { "/opt/puppetlabs/bin/ruby.exe" }
+
+        it 'returns the correct path' do
+          result = instance.which('ruby', privatebindir)
+
+          expect(result).to eq(result)
+        end
+      end
+
       context 'when command is not found' do
-        let(:where_command) { "which unknown" }
+        let(:where_command) { "env PATH=\":$PATH\" which unknown" }
         let(:result) { '' }
 
-        it 'return empty string' do
+        it 'return empty string if command is not found' do
           response = instance.which('unknown')
 
           expect(response).to eq(result)
