@@ -26,6 +26,6 @@ module PSWindows::File
 
   def file_exist?(path)
     result = exec(Beaker::Command.new("if exist #{path} echo true"), :acceptable_exit_codes => [0, 1])
-    result.stdout =~ /true/
+    result.stdout.strip == 'true'
   end
 end
