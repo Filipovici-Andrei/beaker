@@ -154,6 +154,9 @@ module Unix::Exec
   # Recursively remove the path provided
   # @param [String] path The path to remove
   def rm_rf path
+    unless path.start_with?('"', '\'') && path.end_with?('"', '\'')
+      path.gsub!(/(?<!\\) /, '\ ')
+    end
     execute("rm -rf #{path}")
   end
 
